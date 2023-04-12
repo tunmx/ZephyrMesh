@@ -1,3 +1,5 @@
+import os.path
+
 import cv2
 import numpy as np
 import torch
@@ -9,8 +11,8 @@ from data import its
 from data import ZephyrMeshDataset, FMeshAugmentation
 from torch.utils.data import DataLoader
 
-txt_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/val.txt"
-dir_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/"
+dir_path = "/Users/tunm/datasets/ffhq10k_zmesh_dataset"
+txt_path = os.path.sep.join([dir_path, "val.txt"])
 batch_size = 64
 
 cfg = dict(
