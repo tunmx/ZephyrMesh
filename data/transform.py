@@ -1,47 +1,7 @@
-import os
 import random
-
-import cv2
-import numpy as np
 from imgaug import augmenters as iaa
 import imgaug as ia
-
-def get_aligned_lmk(kps, mat):
-    ones = np.ones((kps.shape[0], 1))
-
-    lmk_h = np.concatenate((kps, ones), axis=1)
-
-    align_points = np.dot(mat, lmk_h.T).T
-
-    return align_points
-
-
-def trans_to_align(image, kps, input_size=256):
-    from skimage import transform as trans
-    new_size = 144
-    dst_pts = np.array([
-        [38.2946, 51.6963],
-        [73.5318, 51.5014],
-        [56.0252, 71.7366],
-        [41.5493, 92.3655],
-        [70.7299, 92.2041]], dtype=np.float32)
-    dst_pts[:, 0] += ((new_size - 112) // 2)
-    dst_pts[:, 1] += 8
-    dst_pts[:, :] *= (input_size / float(new_size))
-    tf = trans.SimilarityTransform()
-    tf.estimate(kps, dst_pts)
-    tform = tf.params[0:2, :]
-    warped = cv2.warpAffine(image, tform, (input_size,) * 2)
-
-    return tform, warped
-
-
-def kps_flip(width, kps):
-    n_kps = kps.copy()
-    n_kps[:, 0] = width - n_kps[:, 0] - 1
-    # n_kps = n_kps[n_kps[:, 0].argsort()]
-    return n_kps
-
+from .fmesh.image_tools import *
 
 class FMeshAugmentation(object):
 
@@ -50,10 +10,10 @@ class FMeshAugmentation(object):
                  sometimes_rate=0.5,
                  crop_percent=(0, 0.1),
                  flip_lr=0.0,
-                 gaussian_blur=(0, 1.0),
+                 gaussian_blur=(0, 0.5),
                  multiply=(0.25, 1.55),
                  contrast_normalization=(0.8, 1.2),
-                 gamma_contrast=(0.2, 1.5),
+                 gamma_contrast=(0.6, 1.5),
                  scale=(0.8, 1.6),
                  translate_percent_x=(-0.15, 0.15),
                  translate_percent_y=(-0.15, 0.15),
@@ -97,7 +57,7 @@ class FMeshAugmentation(object):
             iaa.Resize(image_size, ),
         ])
 
-        self.seq_map = dict(train=self.train_seq, val=self.val_seq)
+        self.seq_map = dict(train=self.train_seq, val=self.val_seq, test=self.val_seq)
 
         self.flipper = iaa.Sequential([
             iaa.Fliplr(1.0)

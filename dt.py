@@ -144,6 +144,7 @@ trans_matrix_path = os.path.sep.join([item_data, 'to256_trans_matrix.npy'])
 mesh_path = os.path.sep.join([item_data, 'raw_mesh.npy'])
 kps5_path = os.path.sep.join([item_data, 'kps5.npy'])
 
+
 trans_matrix = np.load(trans_matrix_path)
 mesh = np.load(mesh_path)
 kps5 = np.load(kps5_path)
@@ -177,7 +178,6 @@ for _ in range(0, 64):
     for idx, (x, y) in enumerate(kps5_aug.astype(np.int32)):
         cv2.circle(img_aug, (x, y), 0, (0, 255, 0), 3)
         cv2.putText(img_aug, str(idx), (x, y), cv2.FONT_HERSHEY_COMPLEX, 0.5, (200, 10, 80), 1)
-
 
     cv2.imshow("aug", img_aug)
     cv2.waitKey(0)
