@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     train_batch_size = 16
     val_batch_size = 8
-    worker_num = 0
+    worker_num = 8
     epoch_num = 300
     os.makedirs(save_dir, exist_ok=True)
 
