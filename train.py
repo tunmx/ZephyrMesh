@@ -11,8 +11,8 @@ if __name__ == '__main__':
     val_txt_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/val.txt"
     save_dir = "./workplace"
 
-    train_batch_size = 16
-    val_batch_size = 8
+    train_batch_size = 256
+    val_batch_size = 64
     worker_num = 8
     epoch_num = 300
     os.makedirs(save_dir, exist_ok=True)
