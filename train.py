@@ -32,10 +32,10 @@ if __name__ == '__main__':
     schedule_opt = dict(
         name="ReduceLROnPlateau",
         mode="min",
-        factor=0.5,
+        factor=0.75,
         patience=5,
         verbose=True,
-        min_lr=0.0001
+        min_lr=0.00001
     )
 
     optimizer_opt = dict(
