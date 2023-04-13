@@ -9,6 +9,7 @@ from easydict import EasyDict
 from data import its
 from data import ZephyrMeshDataset, FMeshAugmentation
 from torch.utils.data import DataLoader
+import torch.nn.functional as F
 
 dir_path = "/Users/tunm/datasets/ball_zmesh_dataset"
 txt_path = os.path.sep.join([dir_path, "val.txt"])
@@ -27,7 +28,7 @@ cfg = dict(
 config = EasyDict(cfg)
 net = get_network(config)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-net.load_state_dict(torch.load("workplace/s1/best_model.pth", map_location=device))
+net.load_state_dict(torch.load("workplace/s2/best_model.pth", map_location=device))
 net.eval()
 
 aug = FMeshAugmentation(image_size=256)
@@ -42,6 +43,8 @@ _, _, h, w = images_tensor.shape
 
 output = net(images_tensor)
 print(images_tensor.shape)
+
+print('MAE: ', F.l1_loss(output, kps_tensor))
 
 predict_images = its.visual_images(images_tensor, output, w, h, swap=False)
 gt_images = its.visual_images(images_tensor, kps_tensor, w, h, swap=False, color=(230, 100, 20))

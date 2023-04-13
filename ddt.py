@@ -4,4 +4,7 @@ data = np.load("/Users/tunm/datasets/ballFaceDataset20230317-FMESH/1654053172386
 
 data = dict(data[()])
 
-print(data['verts'])
+print(data['tex'].shape)
+
+for k, v in data.items():
+    print(k)
