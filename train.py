@@ -30,14 +30,14 @@ if __name__ == '__main__':
     total_steps = epoch_steps * epoch_num
     max_warmup_step = 4000
 
-    # schedule_opt = dict(
-    #     name="ReduceLROnPlateau",
-    #     mode="min",
-    #     factor=0.5,
-    #     patience=5,
-    #     verbose=True,
-    #     min_lr=0.0001
-    # )
+    schedule_opt = dict(
+        name="ReduceLROnPlateau",
+        mode="min",
+        factor=0.5,
+        patience=5,
+        verbose=True,
+        min_lr=0.0001
+    )
 
     optimizer_opt = dict(
         name="SGD",
@@ -45,12 +45,12 @@ if __name__ == '__main__':
         momentum=0.9,
         weight_decay=5e-4,
     )
-    schedule_opt = dict(
-        name="PolyScheduler",
-        base_lr=optimizer_opt['lr'],
-        max_steps=total_steps,
-        warmup_steps=max_warmup_step,
-    )
+    # schedule_opt = dict(
+    #     name="PolyScheduler",
+    #     base_lr=optimizer_opt['lr'],
+    #     max_steps=total_steps,
+    #     warmup_steps=max_warmup_step,
+    # )
 
 
     cfg = dict(
