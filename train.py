@@ -7,9 +7,9 @@ import os
 
 
 if __name__ == '__main__':
-    dataset_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/"
-    train_txt_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/train.txt"
-    val_txt_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/val.txt"
+    dataset_path = "dataset/"
+    train_txt_path = "dataset/train.txt"
+    val_txt_path = "dataset/val.txt"
     save_dir = "./workplace/s2"
 
     train_batch_size = 256
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         weight_decay=5e-4,
     )
     schedule_opt = dict(
-        name="StepScheduler",
+        name="PolyScheduler",
         base_lr=optimizer_opt['lr'],
         max_steps=total_steps,
         warmup_steps=max_warmup_step,
