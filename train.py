@@ -10,7 +10,7 @@ if __name__ == '__main__':
     dataset_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/"
     train_txt_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/train.txt"
     val_txt_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/val.txt"
-    save_dir = "./workplace"
+    save_dir = "./workplace/s2"
 
     train_batch_size = 256
     val_batch_size = 64
