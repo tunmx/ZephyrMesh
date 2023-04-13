@@ -70,7 +70,7 @@ if __name__ == '__main__':
         team_name="tunm",
         project_name="ZMesh",
         experiment_name="exp",
-        scenario_nam="training",
+        scenario_name="training",
         folder="log",
         key="4b49a6b0286dcfb718a12360108a7a8578c3582c"
     )
