@@ -68,6 +68,7 @@ def visual_images(images_tensor, label_tensor, w, h, swap=True, color=(96, 48, 2
 
     return list_
 
+
 def get_aligned_lmk(kps, mat):
     ones = np.ones((kps.shape[0], 1))
 
@@ -128,6 +129,6 @@ def data_normalization(image: np.ndarray, points: np.ndarray = None, ):
         label = points.copy()
         label[:, 0] /= width
         label[:, 1] /= height
-        label = label.reshape(-1)
+        label = label.reshape(-1).astype(np.float32)
 
-    return data.astype(np.float32), label.astype(np.float32)
+    return data.astype(np.float32), label

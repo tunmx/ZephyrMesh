@@ -11,7 +11,7 @@ from data import ZephyrMeshDataset, FMeshAugmentation
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 
-dir_path = "/Users/tunm/datasets/ball_zmesh_dataset"
+dir_path = "/Users/tunm/datasets/ffhq10k_zmesh_dataset"
 txt_path = os.path.sep.join([dir_path, "val.txt"])
 batch_size = 64
 
