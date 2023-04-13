@@ -55,18 +55,24 @@ class TrainTask(object):
                     .format(epoch_num, (datetime.datetime.now() - self.time_tag).seconds // 60))
 
     @staticmethod
-    def _configure_optimizers(model, optimizer_option: dict, lr_schedule_option: dict) -> tuple:
+    def _configure_optimizers(model, optimizer_option, lr_schedule_option) -> tuple:
         optimizer_cfg = copy.deepcopy(optimizer_option)
         logger.info("loading optimizer {}".format(optimizer_cfg.get('name')))
         name = optimizer_cfg.pop('name')
         build_optimizer = getattr(torch.optim, name)
         optimizer = build_optimizer(params=model.parameters(), **optimizer_cfg)
 
+
         schedule_cfg = copy.deepcopy(lr_schedule_option)
         name = schedule_cfg.pop('name')
-        build_scheduler = getattr(torch.optim.lr_scheduler, name)
-        scheduler = build_scheduler(
-            optimizer=optimizer, **schedule_cfg)
+        if name in ['PolyScheduler', ]:
+            if name == "PolyScheduler":
+                from .lr_scheduler import PolyScheduler
+                scheduler = PolyScheduler(optimizer, **schedule_cfg)
+        else:
+            build_scheduler = getattr(torch.optim.lr_scheduler, name)
+            scheduler = build_scheduler(
+                optimizer=optimizer, **schedule_cfg)
 
         return optimizer, scheduler
 

@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from trainer.task import TrainTask
 import os
 
+
 if __name__ == '__main__':
     dataset_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/"
     train_txt_path = "/Users/tunm/datasets/ballFaceDataset20230317-ZMESH/train.txt"
@@ -14,7 +15,7 @@ if __name__ == '__main__':
     train_batch_size = 256
     val_batch_size = 64
     worker_num = 8
-    epoch_num = 300
+    epoch_num = 100
     os.makedirs(save_dir, exist_ok=True)
 
     aug = FMeshAugmentation(image_size=256)
@@ -25,18 +26,32 @@ if __name__ == '__main__':
     val_dataloader = DataLoader(dataset=val_dataset, batch_size=val_batch_size, shuffle=True,
                                 num_workers=worker_num, pin_memory=True)
 
-    schedule_opt = dict(
-        name="ReduceLROnPlateau",
-        mode="min",
-        factor=0.5,
-        patience=5,
-        verbose=True,
-    )
+    epoch_steps = len(train_dataset) // train_batch_size
+    total_steps = epoch_steps * epoch_num
+    max_warmup_step = 4000
+
+    # schedule_opt = dict(
+    #     name="ReduceLROnPlateau",
+    #     mode="min",
+    #     factor=0.5,
+    #     patience=5,
+    #     verbose=True,
+    #     min_lr=0.0001
+    # )
 
     optimizer_opt = dict(
-        name="Adam",
-        lr=0.001,
+        name="SGD",
+        lr=0.1,
+        momentum=0.9,
+        weight_decay=5e-4,
     )
+    schedule_opt = dict(
+        name="StepScheduler",
+        base_lr=optimizer_opt['lr'],
+        max_steps=total_steps,
+        warmup_steps=max_warmup_step,
+    )
+
 
     cfg = dict(
         use_onenetwork=True,

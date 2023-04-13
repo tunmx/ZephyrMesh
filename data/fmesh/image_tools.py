@@ -62,7 +62,7 @@ def visual_images(images_tensor, label_tensor, w, h, swap=True):
         if swap:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         for i, (x, y) in enumerate(kps[idx].astype(np.int32)):
-            cv2.line(img, (x, y), (x, y), (96, 48, 176), 1)
+            cv2.line(img, (x, y), (x, y), (96, 48, 255), 1)
 
         list_.append(img)
 
