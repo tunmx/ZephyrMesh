@@ -12,7 +12,7 @@ if __name__ == '__main__':
     val_txt_path = "dataset/val.txt"
     save_dir = "./workplace/s2"
 
-    train_batch_size = 256
+    train_batch_size = 128
     val_batch_size = 64
     worker_num = 8
     epoch_num = 1000
