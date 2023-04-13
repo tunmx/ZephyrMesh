@@ -5,7 +5,6 @@ from torch.utils.data import DataLoader
 from trainer.task import TrainTask
 import os
 
-
 if __name__ == '__main__':
     dataset_path = "dataset/"
     train_txt_path = "dataset/train.txt"
@@ -52,7 +51,6 @@ if __name__ == '__main__':
     #     warmup_steps=max_warmup_step,
     # )
 
-
     cfg = dict(
         use_onenetwork=True,
         width_mult=1.0,
@@ -68,6 +66,15 @@ if __name__ == '__main__':
 
     print(net)
 
-    task = TrainTask(net, save_dir, optimizer_opt, schedule_opt, )
+    wandb_opt = dict(
+        team_name="tunm",
+        project_name="ZMesh",
+        experiment_name="exp",
+        scenario_nam="training",
+        folder="log",
+        key="4b49a6b0286dcfb718a12360108a7a8578c3582c"
+    )
 
-    task.fitting(train_data=train_dataloader, val_data=val_dataloader, epoch_num=epoch_num, is_save=True)
+    task = TrainTask(net, save_dir, optimizer_opt, schedule_opt, wandb_cfg=wandb_opt, )
+
+    task.fitting(train_data=train_dataloader, val_data=val_dataloader, epoch_num=epoch_num, is_save=True, )

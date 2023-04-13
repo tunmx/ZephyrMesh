@@ -8,9 +8,12 @@ from torch.utils.tensorboard import SummaryWriter
 import datetime
 from torch.utils.data import DataLoader
 from loguru import logger
-# import wandb
-# import socket
+import wandb
+import socket
 import torch.nn.functional as F
+from data.fmesh.image_tools import visual_images
+
+SHOW_IMAGE_NUM = 6
 
 class TrainTask(object):
     def __init__(self, model, save_dir, optimizer_option, lr_schedule_option, loss_func=F.l1_loss, wandb_cfg=None, weight_path=None):
@@ -31,6 +34,8 @@ class TrainTask(object):
         #     self._load_pretraining_model(weight_path)
         self.model = self.model.to(self.task_device)
 
+        self._wandb_log_init_(wandb_cfg)
+
     def fitting(self, train_data: DataLoader, val_data: DataLoader, epoch_num: int, is_save: bool = True):
         logger.info("Start training.")
         logger.info(f"Training Epochs Total: {epoch_num}")
@@ -38,11 +43,11 @@ class TrainTask(object):
         for epoch in range(epoch_num):
             # train set
             train_loss = self.train_one_epoch(train_data, epoch, epoch_num)
-            # wandb.log({'train_loss': train_loss}, step=epoch + 1)
+            wandb.log({'train_loss': train_loss}, step=epoch + 1)
             # val set
             self.upload = True
             val_loss = self.validation_one_epoch(val_data, epoch)
-            # wandb.log({'val_loss': val_loss}, step=epoch + 1)
+            wandb.log({'val_loss': val_loss}, step=epoch + 1)
             logger.info(f"Train Epoch[{epoch + 1}/{epoch_num}] val_loss: {val_loss}")
             if is_save:
                 self.save_model(val_loss, epoch, mode='min')
@@ -135,13 +140,59 @@ class TrainTask(object):
 
                 val_bar.set_description(
                     'Val: loss: {:.3f}'.format(val_loss / (step + 1)))
-                # predict_images = visual_images(val_images.cpu()[:SHOW_IMAGE_NUM], outputs.cpu()[:SHOW_IMAGE_NUM], w, h)
-                # predict_images = np.asarray(predict_images)
-                # gt_images = visual_images(val_images.cpu()[:SHOW_IMAGE_NUM], val_labels.cpu()[:SHOW_IMAGE_NUM], w, h,
-                #                           is_val=True)
-                # gt_images = np.asarray(gt_images)
-                # self._upload_images_(predict_images, epoch + 1, images_gt=gt_images)
-                # self.upload = False
+                predict_images = visual_images(val_images.cpu()[:SHOW_IMAGE_NUM], outputs.cpu()[:SHOW_IMAGE_NUM], w, h)
+                predict_images = np.asarray(predict_images)
+                gt_images = visual_images(val_images.cpu()[:SHOW_IMAGE_NUM], val_labels.cpu()[:SHOW_IMAGE_NUM], w, h, color=(230, 100, 20))
+                gt_images = np.asarray(gt_images)
+                self._upload_images_(predict_images, epoch + 1, images_gt=gt_images)
+                self.upload = False
 
-        # wandb.log({'lr': self.optimizer.state_dict()['param_groups'][0]['lr']}, step=epoch + 1)
+        wandb.log({'lr': self.optimizer.state_dict()['param_groups'][0]['lr']}, step=epoch + 1)
         return val_loss / len(val_bar)
+
+
+    def _wandb_log_init_(self, wandb_cfg):
+        dir_path = os.path.join(self.save_dir, wandb_cfg['folder'])
+        os.makedirs(dir_path, exist_ok=True)
+        wandb_init_config = dict(team_name=wandb_cfg['team_name'], project_name=wandb_cfg['project_name'],
+                                 experiment_name=wandb_cfg['experiment_name'], scenario_name=wandb_cfg['scenario_name'])
+        if wandb_cfg:
+            wandb.login(key=wandb_cfg.key)
+        wandb.init(config=wandb_init_config,
+                   project=wandb_cfg['project_name'],
+                   entity=wandb_cfg['team_name'],
+                   notes=socket.gethostname(),
+                   group="training",
+                   dir=dir_path,
+                   job_type="training",
+                   reinit=True,
+                   )
+
+    def _upload_images_(self, images: np.ndarray, step: int, images_gt: np.ndarray = None, ):
+        img_list = list()
+        gt_list = list()
+        if len(images.shape) == 4:
+            for img in images:
+                img_list.append(wandb.Image(img))
+        elif len(images.shape) == 3:
+            img_list.append(wandb.Image(images))
+        else:
+            pass
+        if images_gt is not None:
+            # show gt images
+            if len(images_gt.shape) == 4:
+                for img in images_gt:
+                    gt_list.append(wandb.Image(img))
+            elif len(images_gt.shape) == 3:
+                gt_list.append(wandb.Image(images_gt))
+            else:
+                pass
+        if self.upload:
+            wandb.log({
+                "results": img_list
+            }, step=step)
+
+            if gt_list:
+                wandb.log({
+                    "ground truth": gt_list
+                }, step=step)
