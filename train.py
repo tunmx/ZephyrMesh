@@ -15,7 +15,7 @@ if __name__ == '__main__':
     train_batch_size = 256
     val_batch_size = 64
     worker_num = 8
-    epoch_num = 100
+    epoch_num = 1000
     os.makedirs(save_dir, exist_ok=True)
 
     aug = FMeshAugmentation(image_size=256)
