@@ -1,4 +1,4 @@
 .idea
 workplace/
 */__pycache__
-dataset/
+./dataset/
