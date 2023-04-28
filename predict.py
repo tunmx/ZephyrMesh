@@ -12,7 +12,7 @@ output_config = session.get_outputs()[0]
 
 det = SCRFD("resource/scrfd_2.5g_bnkps_shape320x320.onnx")
 
-image = cv2.imread("/Users/tunm/datasets/小孩/src=http___p0.meituan.net_shaitu_134c430068b99a86e929459d20ae764b1950897.jpg&refer=http___p0.meituan.jpeg")
+image = cv2.imread("/Users/tunm/datasets/BDLMK-ballFaceDataset20230317/1653880223798_whiteFace_face.jpg")
 
 bboxes, kpss = det.detect(image)
 input_size = 256
@@ -34,7 +34,7 @@ if kpss.size > 0:
     mesh_t = np.dot(inv_matrix, mesh_c.T).T
     print(mesh_t)
     for x, y in mesh_t.astype(int):
-        cv2.circle(image, (x, y), 0, (0, 0, 255), 5)
+        cv2.circle(image, (x, y), 0, (0, 255, 255), 5)
 
     cv2.imshow('w', image)
     cv2.waitKey(0)

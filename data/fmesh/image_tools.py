@@ -44,7 +44,7 @@ def decode_images(images_tensor):
 
 
 def decode_points(label_tensor, w, h):
-    kps = label_tensor.detach().numpy().reshape(-1, 1787, 2)
+    kps = label_tensor.detach().numpy().reshape(-1, 1220, 2)
     kps[:, :, 0] *= w
     kps[:, :, 1] *= h
 
@@ -79,8 +79,11 @@ def get_aligned_lmk(kps, mat):
     return align_points
 
 
-def trans_to_align(image, kps, input_size=256):
+def trans_to_align(image, kps, input_size=256, center_disturbance=0.0):
     from skimage import transform as trans
+    import numpy as np
+    import cv2
+
     new_size = 144
     dst_pts = np.array([
         [38.2946, 51.6963],
@@ -94,9 +97,14 @@ def trans_to_align(image, kps, input_size=256):
     tf = trans.SimilarityTransform()
     tf.estimate(kps, dst_pts)
     tform = tf.params[0:2, :]
+
+    center_disturb = np.random.uniform(-center_disturbance, center_disturbance, size=(2,))
+    tform[:, 2] += center_disturb  # Add the center disturbance to the translation part of the transform matrix
+
     warped = cv2.warpAffine(image, tform, (input_size,) * 2)
 
     return tform, warped
+
 
 
 def kps_flip(width, kps):

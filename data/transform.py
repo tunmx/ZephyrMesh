@@ -3,6 +3,7 @@ from imgaug import augmenters as iaa
 import imgaug as ia
 from .fmesh.image_tools import *
 
+
 class FMeshAugmentation(object):
 
     def __init__(self,
@@ -22,13 +23,15 @@ class FMeshAugmentation(object):
                  order=(0, 1),
                  cval=0,
                  mode="constant",
+                 align_center_disturbance=0.1
                  ):
         # 定义一个lambda表达式，以p=0.5的概率去执行sometimes传递的图像增强
         sometimes = lambda aug: iaa.Sometimes(sometimes_rate, aug)
+        self.align_center_disturbance = align_center_disturbance * image_size
         self.image_size = image_size
         self.flip_lr = flip_lr
         self.val_seq = iaa.Sequential([
-            iaa.Resize((image_size, image_size), ),
+            iaa.Resize(size=(image_size, image_size), ),
         ])
 
         self.train_seq = iaa.Sequential([  # 建立一个名为seq的实例，定义增强方法，用于增强
@@ -54,7 +57,7 @@ class FMeshAugmentation(object):
                 mode=mode  # 定义填充图像外区域的方法
             )),
 
-            iaa.Resize(image_size, ),
+            iaa.Resize(size=(image_size, image_size), ),
         ])
 
         self.seq_map = dict(train=self.train_seq, val=self.val_seq, test=self.val_seq)
@@ -90,7 +93,10 @@ class FMeshAugmentation(object):
                 kps_out = kps_flip(width, kps_out)
 
         if is_align:
-            tfrom, img_aug = trans_to_align(img_aug, kps5_out, self.image_size)
+            if mode == 'train':
+                tfrom, img_aug = trans_to_align(img_aug, kps5_out, self.image_size, center_disturbance=self.align_center_disturbance)
+            else:
+                tfrom, img_aug = trans_to_align(img_aug, kps5_out, self.image_size, center_disturbance=0)
             kps_out = get_aligned_lmk(kps_out, tfrom)
             kps5_out = get_aligned_lmk(kps5_out, tfrom)
 
