@@ -1,15 +1,13 @@
 from backbone import get_network
 from easydict import EasyDict
-from data import ZephyrMeshDataset, FMeshAugmentation
+from data import AK2DMeshDataset, AK2DFolder, FMeshAugmentation
 from torch.utils.data import DataLoader
 from trainer.task import TrainTask
 import os
 
 if __name__ == '__main__':
-    dataset_path = "dataset/"
-    train_txt_path = "dataset/train.txt"
-    val_txt_path = "dataset/val.txt"
-    save_dir = "./workplace/s2"
+    datasets_folders = ["/Users/tunm/datasets/arkit_train/emotion", ]
+    save_dir = "./workplace/a3"
 
     train_batch_size = 128
     val_batch_size = 64
@@ -18,8 +16,12 @@ if __name__ == '__main__':
     os.makedirs(save_dir, exist_ok=True)
 
     aug = FMeshAugmentation(image_size=256)
-    train_dataset = ZephyrMeshDataset(dataset_path, train_txt_path, mode="train", transform=aug, is_show=False)
-    val_dataset = ZephyrMeshDataset(dataset_path, val_txt_path, mode="val", transform=aug, is_show=False)
+
+    folders = list()
+    for path in datasets_folders:
+        folders.append(AK2DFolder(path))
+    train_dataset = AK2DMeshDataset(folders, mode="train", transform=aug, is_show=False)
+    val_dataset = AK2DMeshDataset(folders, mode="val", transform=aug, is_show=False)
     train_dataloader = DataLoader(dataset=train_dataset, batch_size=train_batch_size, shuffle=True,
                                   num_workers=worker_num, pin_memory=True)
     val_dataloader = DataLoader(dataset=val_dataset, batch_size=val_batch_size, shuffle=True,
@@ -54,7 +56,7 @@ if __name__ == '__main__':
     cfg = dict(
         use_onenetwork=True,
         width_mult=1.0,
-        num_verts=1787,
+        num_verts=1120,
         input_size=256,
         task=3,
         network='resnet_jmlr',

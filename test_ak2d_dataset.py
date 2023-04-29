@@ -6,8 +6,8 @@ import cv2
 
 ak2d_folder = AK2DFolder("/Users/tunm/datasets/arkit_train/emotion")
 
-dataset = AK2DMeshDataset([ak2d_folder], mode='val')
-dataloader = DataLoader(dataset=dataset, batch_size=32, shuffle=True,
+dataset = AK2DMeshDataset([ak2d_folder], mode='train')
+dataloader = DataLoader(dataset=dataset, batch_size=128, shuffle=True,
                         num_workers=0)
 
 transform_data = tqdm.tqdm(dataloader)
